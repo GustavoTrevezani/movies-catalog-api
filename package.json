@@ -2,13 +2,21 @@
   "dependencies": {
     "@nestjs/config": "^4.0.3",
     "@nestjs/core": "^11.1.17",
+    "@nestjs/jwt": "^11.0.2",
+    "@nestjs/passport": "^11.0.5",
     "@nestjs/platform-express": "^11.1.17",
     "@prisma/adapter-pg": "^7.5.0",
     "@prisma/client": "^7.5.0",
+    "axios": "^1.13.6",
+    "bcryptjs": "^3.0.3",
+    "passport": "^0.7.0",
+    "passport-jwt": "^4.0.1",
     "pg": "^8.20.0"
   },
   "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
     "@types/node": "^25.5.0",
+    "@types/passport-jwt": "^4.0.1",
     "@types/pg": "^8.20.0",
     "dotenv": "^17.3.1",
     "prisma": "^7.5.0"
