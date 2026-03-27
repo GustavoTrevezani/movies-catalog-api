@@ -109,6 +109,9 @@ export class MoviesService {
 
   async mostWatched() {
     return this.prisma.movie.findMany({
+      where: {
+        watched: { some: {} },
+      },
       include: { _count: { select: { watched: true } } },
       orderBy: { watched: { _count: "desc" } },
       take: 10,
