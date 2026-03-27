@@ -1,0 +1,67 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  role      Role     @default(COMUM)
+  createdAt DateTime @default(now())
+
+  favorites Favorite[]
+  watched   Watched[]
+  passwordResets PasswordReset[]
+}
+
+model Movie {
+  id        String   @id 
+  title     String
+  year      String
+  type      String
+  poster    String?
+  plot      String?
+  createdAt DateTime @default(now())
+
+  favorites Favorite[]
+  watched   Watched[]
+}
+
+model Favorite {
+  id      String @id @default(uuid())
+  userId  String
+  movieId String
+
+  user  User  @relation(fields: [userId], references: [id])
+  movie Movie @relation(fields: [movieId], references: [id])
+
+  @@unique([userId, movieId])
+}
+
+model Watched {
+  id      String @id @default(uuid())
+  userId  String
+  movieId String
+
+  user  User  @relation(fields: [userId], references: [id])
+  movie Movie @relation(fields: [movieId], references: [id])
+
+  @@unique([userId, movieId])
+}
+
+model PasswordReset {
+  id        String   @id @default(uuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+enum Role {
+  ADMIN
+  COMUM
+}
