@@ -95,13 +95,13 @@ export class MovieService {
   // Admin endpoints
   getMostFavorited(): Observable<RankingItem[]> {
     return this.http
-      .get<RankingItem[]>(`${this.API_URL}/admin/ranking/favorites`)
+      .get<RankingItem[]>(`${this.API_URL}/movies/rankings/favorites`)
       .pipe(catchError(() => of([])));
   }
 
   getMostWatched(): Observable<RankingItem[]> {
     return this.http
-      .get<RankingItem[]>(`${this.API_URL}/admin/ranking/watched`)
+      .get<RankingItem[]>(`${this.API_URL}/movies/rankings/watched`)
       .pipe(catchError(() => of([])));
   }
 

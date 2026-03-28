@@ -108,21 +108,50 @@ export class MoviesService {
 
   // ── ADMIN RANKINGS ─────────────────────────────────────────
   async mostFavorited() {
-    return this.prisma.movie.findMany({
+    const movies = await this.prisma.movie.findMany({
+      where: {
+        favorites: {
+          some: {},
+        },
+      },
       include: { _count: { select: { favorites: true } } },
       orderBy: { favorites: { _count: "desc" } },
       take: 10,
     });
+
+    return movies.map((movie) => ({
+      movie: {
+        id: movie.id,
+        title: movie.title,
+        year: movie.year,
+        type: movie.type,
+        poster: movie.poster,
+      },
+      count: movie._count.favorites,
+    }));
   }
 
   async mostWatched() {
-    return this.prisma.movie.findMany({
+    const movies = await this.prisma.movie.findMany({
       where: {
-        watched: { some: {} },
+        watched: {
+          some: {},
+        },
       },
       include: { _count: { select: { watched: true } } },
-      orderBy: { watched: { _count: "desc" } },
+      orderBy: { favorites: { _count: "desc" } },
       take: 10,
     });
+
+    return movies.map((movie) => ({
+      movie: {
+        id: movie.id,
+        title: movie.title,
+        year: movie.year,
+        type: movie.type,
+        poster: movie.poster,
+      },
+      count: movie._count.watched,
+    }));
   }
 }
