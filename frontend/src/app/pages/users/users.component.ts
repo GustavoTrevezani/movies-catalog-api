@@ -11,8 +11,12 @@ import { UserWithMovies } from "../../models/movie.model";
   template: `
     <div class="max-w-7xl mx-auto px-4 py-8">
       <div class="mb-8">
-        <h1 class="text-3xl font-bold text-text mb-2">User Management</h1>
-        <p class="text-text-muted">Search and view user information</p>
+        <h1 class="text-3xl font-bold text-text mb-2">
+          Gerenciamento de Usuários
+        </h1>
+        <p class="text-text-muted">
+          Procure e visualize informações dos usuários
+        </p>
       </div>
 
       <!-- Search Section -->
@@ -100,7 +104,7 @@ import { UserWithMovies } from "../../models/movie.model";
                         <path
                           d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" />
                       </svg>
-                      Favorites ({{ user.favorites.length || 0 }})
+                      Favoritado ({{ user.favorites.length || 0 }})
                     </h4>
                     @if (user.favorites && user.favorites.length > 0) {
                       <div class="space-y-2 max-h-48 overflow-y-auto">
@@ -131,7 +135,9 @@ import { UserWithMovies } from "../../models/movie.model";
                         }
                       </div>
                     } @else {
-                      <p class="text-sm text-text-muted">No favorites</p>
+                      <p class="text-sm text-text-muted">
+                        Sem filmes favoritos
+                      </p>
                     }
                   </div>
 
@@ -155,7 +161,7 @@ import { UserWithMovies } from "../../models/movie.model";
                           stroke-width="2"
                           d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                       </svg>
-                      Watched ({{ user.watched.length || 0 }})
+                      Assistidos ({{ user.watched.length || 0 }})
                     </h4>
                     @if (user.watched && user.watched.length > 0) {
                       <div class="space-y-2 max-h-48 overflow-y-auto">
@@ -186,7 +192,9 @@ import { UserWithMovies } from "../../models/movie.model";
                         }
                       </div>
                     } @else {
-                      <p class="text-sm text-text-muted">No watched movies</p>
+                      <p class="text-sm text-text-muted">
+                        Sem filmes assistidos
+                      </p>
                     }
                   </div>
                 </div>
@@ -229,8 +237,10 @@ import { UserWithMovies } from "../../models/movie.model";
                 d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
             </svg>
           </div>
-          <h3 class="text-xl font-semibold text-text mb-2">Search for Users</h3>
-          <p class="text-text-muted">Enter an email to find users</p>
+          <h3 class="text-xl font-semibold text-text mb-2">
+            Encontre Usuários
+          </h3>
+          <p class="text-text-muted">Digite um email para encontrar usuários</p>
         </div>
       }
     </div>

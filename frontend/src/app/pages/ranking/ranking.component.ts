@@ -11,9 +11,9 @@ import { forkJoin } from "rxjs";
   template: `
     <div class="max-w-7xl mx-auto px-4 py-8">
       <div class="mb-8">
-        <h1 class="text-3xl font-bold text-text mb-2">Movie Rankings</h1>
+        <h1 class="text-3xl font-bold text-text mb-2">Rankings Dos Filmes</h1>
         <p class="text-text-muted">
-          See the most popular movies among all users
+          Veja os filmes mais amados e assistidos pelos usuários
         </p>
       </div>
 
@@ -30,7 +30,7 @@ import { forkJoin } from "rxjs";
                 <path
                   d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" />
               </svg>
-              Most Favorited
+              Mais Favoritados
             </span>
           </button>
           <button
@@ -53,7 +53,7 @@ import { forkJoin } from "rxjs";
                   stroke-width="2"
                   d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
               </svg>
-              Most Watched
+              Mais assistidos
             </span>
           </button>
         </div>
@@ -118,7 +118,9 @@ import { forkJoin } from "rxjs";
                     </p>
                   </div>
                   <div class="text-right">
-                    <span class="badge-accent">{{ item.count }} favorites</span>
+                    <span class="badge-accent"
+                      >{{ item.count }} Favorito(s)</span
+                    >
                   </div>
                 </div>
               }
@@ -136,7 +138,7 @@ import { forkJoin } from "rxjs";
                 </svg>
               </div>
               <h3 class="text-xl font-semibold text-text mb-2">No data yet</h3>
-              <p class="text-text-muted">No movies have been favorited</p>
+              <p class="text-text-muted">Nenhum filme ainda foi favoritado</p>
             </div>
           }
         }
@@ -177,7 +179,9 @@ import { forkJoin } from "rxjs";
                     <p class="text-sm text-text-muted">{{ item.movie.year }}</p>
                   </div>
                   <div class="text-right">
-                    <span class="badge-success">{{ item.count }} watches</span>
+                    <span class="badge-success"
+                      >{{ item.count }} assistido(s)</span
+                    >
                   </div>
                 </div>
               }
@@ -204,7 +208,7 @@ import { forkJoin } from "rxjs";
                 </svg>
               </div>
               <h3 class="text-xl font-semibold text-text mb-2">No data yet</h3>
-              <p class="text-text-muted">No movies have been watched</p>
+              <p class="text-text-muted">Nenhum filme ainda foi assistido</p>
             </div>
           }
         }
