@@ -132,6 +132,13 @@ import { errorTranslations } from "../../shared/i18n/error";
               Criar conta
             </a>
           </p>
+          <p class="text-center text-text-muted mt-3">
+            <a
+              routerLink="/reset-password"
+              class="text-primary hover:text-primary-hover font-medium">
+              Esqueceu sua senha?
+            </a>
+          </p>
         </div>
       </div>
     </div>
