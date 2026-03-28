@@ -34,12 +34,12 @@ import { UserWithMovies } from "../../models/movie.model";
               type="text"
               [(ngModel)]="searchQuery"
               name="searchQuery"
-              placeholder="Search by email..."
+              placeholder="Procure pelo email..."
               class="input-field pl-12" />
           </div>
           <button
             type="submit"
-            [disabled]="isLoading() || !searchQuery.trim()"
+            [disabled]="isLoading()"
             class="btn-primary flex items-center gap-2">
             @if (isLoading()) {
               <svg class="animate-spin h-5 w-5" viewBox="0 0 24 24">
@@ -56,9 +56,9 @@ import { UserWithMovies } from "../../models/movie.model";
                   fill="currentColor"
                   d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
               </svg>
-              Searching...
+              Procurando...
             } @else {
-              Search
+              Procurar
             }
           </button>
         </form>
@@ -245,12 +245,12 @@ export class UsersComponent {
   constructor(private movieService: MovieService) {}
 
   searchUsers(): void {
-    if (!this.searchQuery.trim()) return;
-
     this.isLoading.set(true);
     this.hasSearched.set(true);
 
-    this.movieService.searchUsers(this.searchQuery).subscribe({
+    const query = this.searchQuery?.trim() || undefined;
+
+    this.movieService.searchUsers(query).subscribe({
       next: (users) => {
         this.users.set(users);
         this.isLoading.set(false);

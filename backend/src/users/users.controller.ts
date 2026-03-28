@@ -1,4 +1,4 @@
-import { Controller, Get, Param, UseGuards } from "@nestjs/common";
+import { Controller, Get, Param, UseGuards, Query } from "@nestjs/common";
 import { UsersService } from "./users.service";
 import { JwtAuthGuard } from "../auth/jwtAuth.guard";
 import { RolesGuard } from "../auth/roles.guard";
@@ -10,9 +10,14 @@ import { Roles } from "../auth/roles.decorator";
 export class UsersController {
   constructor(private usersService: UsersService) {}
 
+  // @Get()
+  // findAll() {
+  //   return this.usersService.findAll();
+  // }
+
   @Get()
-  findAll() {
-    return this.usersService.findAll();
+  findEmail(@Query("query") query?: string) {
+    return this.usersService.searchUsers(query);
   }
 
   @Get(":id")

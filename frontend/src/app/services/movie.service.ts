@@ -105,11 +105,14 @@ export class MovieService {
       .pipe(catchError(() => of([])));
   }
 
-  searchUsers(query: string): Observable<UserWithMovies[]> {
+  searchUsers(query?: string): Observable<UserWithMovies[]> {
+    const params: any = {};
+    if (query && query.trim()) {
+      params.query = query.trim();
+    }
+
     return this.http
-      .get<UserWithMovies[]>(`${this.API_URL}/admin/users/search`, {
-        params: { query },
-      })
+      .get<UserWithMovies[]>(`${this.API_URL}/users`, { params })
       .pipe(catchError(() => of([])));
   }
 }
