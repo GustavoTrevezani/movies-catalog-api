@@ -4,6 +4,7 @@ import { MovieCardComponent } from "../../components/movie-card/movie-card.compo
 import { MovieService } from "../../services/movie.service";
 import { AuthService } from "../../services/auth.service";
 import { Movie, UserMovie } from "../../models/movie.model";
+import { forkJoin } from "rxjs";
 
 @Component({
   selector: "app-profile",
@@ -20,7 +21,7 @@ import { Movie, UserMovie } from "../../models/movie.model";
           </div>
           <div>
             <h1 class="text-2xl font-bold text-text">
-              {{ authService.user()?.email }}
+              {{ authService.user()?.email || "Carregando..." }}
             </h1>
             <div class="flex items-center gap-2 mt-1">
               <span class="badge-primary">{{ authService.user()?.role }}</span>
@@ -225,13 +226,17 @@ export class ProfileComponent implements OnInit {
   loadData(): void {
     this.isLoading.set(true);
 
-    Promise.all([
-      this.movieService.getFavorites().toPromise(),
-      this.movieService.getWatched().toPromise(),
-    ]).then(([favorites, watched]) => {
-      this.favorites.set(favorites || []);
-      this.watched.set(watched || []);
-      this.isLoading.set(false);
+    forkJoin([
+      this.movieService.getFavorites(),
+      this.movieService.getWatched(),
+      this.authService.getMe(),
+    ]).subscribe({
+      next: ([favorites, watched]) => {
+        this.favorites.set(favorites || []);
+        this.watched.set(watched || []);
+        this.isLoading.set(false);
+      },
+      error: () => this.isLoading.set(false),
     });
   }
 

@@ -22,18 +22,26 @@ export class AuthService {
   private userSignal = signal<User | null>(this.getStoredUser());
 
   user = this.userSignal.asReadonly();
+  isAdmin = computed(() => this.userSignal()?.role === "ADMIN");
   isAuthenticated(): boolean {
     return !!localStorage.getItem(this.TOKEN_KEY);
   }
-  isAdmin = computed(() => this.userSignal()?.role === "ADMIN");
 
   constructor(
     private http: HttpClient,
     private router: Router,
-  ) {}
+  ) {
+    if (this.isAuthenticated()) {
+      this.loadUser();
+    }
+  }
 
   getMe() {
-    return this.http.get<User>(`${this.API_URL}/auth/me`);
+    return this.http.get<User>(`${this.API_URL}/auth/me`, {
+      headers: {
+        Authorization: `Bearer ${this.getToken()}`,
+      },
+    });
   }
 
   login(credentials: LoginRequest): Observable<AuthResponse> {
@@ -87,15 +95,14 @@ export class AuthService {
   }
 
   loadUser() {
-    const token = localStorage.getItem("token");
-    if (!token) return;
-
     this.getMe().subscribe({
       next: (user) => {
         this.userSignal.set(user);
       },
       error: () => {
-        this.logout();
+        localStorage.removeItem(this.TOKEN_KEY);
+        this.userSignal.set(null);
+        this.router.navigate(["/login"]);
       },
     });
   }
