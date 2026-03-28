@@ -11,7 +11,15 @@ export class MoviesService {
 
   // Search OMDb by title
   async search(title: string) {
-    return this.omdb.searchByTitle(title);
+    const movies = await this.omdb.searchByTitle(title);
+
+    return movies.map((movie: any) => ({
+      id: movie.imdbID,
+      title: movie.Title,
+      year: movie.Year,
+      type: movie.Type,
+      poster: movie.Poster !== "N/A" ? movie.Poster : null,
+    }));
   }
 
   // Ensures movie exists in DB (fetches from OMDb if not)
