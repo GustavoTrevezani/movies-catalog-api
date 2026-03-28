@@ -2,11 +2,17 @@ import { Component, signal } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { RouterLink, RouterLinkActive } from "@angular/router";
 import { AuthService } from "../../services/auth.service";
+import {
+  Validators,
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+} from "@angular/forms";
 
 @Component({
   selector: "app-navbar",
   standalone: true,
-  imports: [CommonModule, RouterLink, RouterLinkActive],
+  imports: [CommonModule, RouterLink, RouterLinkActive, ReactiveFormsModule],
   template: `
     <nav
       class="fixed top-0 left-0 right-0 h-16 bg-surface border-b border-border z-50">
@@ -148,7 +154,12 @@ import { AuthService } from "../../services/auth.service";
                     authService.user()?.role
                   }}</span>
                 </div>
-                <div class="p-2">
+                <div class="p-2 flex flex-col gap-1">
+                  <button
+                    (click)="openChangePassword()"
+                    class="w-full flex items-center gap-2 px-3 py-2 text-left text-primary hover:bg-primary/10 rounded-lg transition-colors">
+                    Trocar Senha
+                  </button>
                   <button
                     (click)="logout()"
                     class="w-full flex items-center gap-2 px-3 py-2 text-left text-error hover:bg-error/10 rounded-lg transition-colors">
@@ -177,12 +188,94 @@ import { AuthService } from "../../services/auth.service";
     @if (isDropdownOpen()) {
       <div class="fixed inset-0 z-40" (click)="isDropdownOpen.set(false)"></div>
     }
+    <!-- Change Password Modal -->
+    <div
+      *ngIf="isChangePasswordOpen()"
+      class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center">
+      <div class="bg-surface rounded-lg p-6 w-full max-w-md shadow-lg">
+        <!-- Título centralizado -->
+        <h2 class="text-xl font-bold text-center mb-6">Trocar Senha</h2>
+
+        <form
+          [formGroup]="passwordForm"
+          (ngSubmit)="changePassword()"
+          class="flex flex-col gap-4">
+          <!-- Current Password -->
+          <div class="flex flex-col">
+            <label for="currentPassword" class="mb-1 font-medium text-text"
+              >Senha Atual</label
+            >
+            <input
+              id="currentPassword"
+              type="password"
+              placeholder="Senha Atual"
+              formControlName="currentPassword"
+              class="border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-primary text-black"
+              required />
+          </div>
+
+          <!-- New Password -->
+          <div class="flex flex-col">
+            <label for="newPassword" class="mb-1 font-medium text-text"
+              >Nova Senha</label
+            >
+            <input
+              id="newPassword"
+              type="password"
+              placeholder="Nova Senha"
+              formControlName="newPassword"
+              class="border border-gray-800 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-primary text-black"
+              required />
+          </div>
+
+          <!-- Confirm New Password -->
+          <div class="flex flex-col">
+            <label for="confirmPassword" class="mb-1 font-medium text-text"
+              >Confirmar Senha</label
+            >
+            <input
+              id="confirmPassword"
+              type="password"
+              placeholder="Confirmar Senha"
+              formControlName="confirmPassword"
+              class="border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-primary text-black"
+              required />
+          </div>
+
+          <!-- Botões -->
+          <div class="flex justify-end gap-3 mt-4">
+            <button
+              type="button"
+              (click)="isChangePasswordOpen.set(false)"
+              class="px-4 py-2 rounded-lg bg-red-500 text-white hover:bg-red-600 transition-colors font-medium">
+              Cancelar
+            </button>
+            <button
+              type="submit"
+              [disabled]="passwordForm.invalid"
+              class="px-4 py-2 rounded-lg bg-primary text-white hover:bg-primary/90 transition-colors font-medium">
+              Salvar
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
   `,
 })
 export class NavbarComponent {
   isDropdownOpen = signal(false);
+  isChangePasswordOpen = signal(false);
 
-  constructor(public authService: AuthService) {}
+  passwordForm: FormGroup = this.fb.group({
+    currentPassword: ["", Validators.required],
+    newPassword: ["", Validators.required],
+    confirmPassword: ["", Validators.required],
+  });
+
+  constructor(
+    public authService: AuthService,
+    private fb: FormBuilder,
+  ) {}
 
   get userInitials(): string {
     const email = this.authService.user()?.email || "";
@@ -192,5 +285,33 @@ export class NavbarComponent {
   logout(): void {
     this.isDropdownOpen.set(false);
     this.authService.logout();
+  }
+  openChangePassword(): void {
+    this.isDropdownOpen.set(false);
+    this.isChangePasswordOpen.set(true);
+  }
+
+  changePassword(): void {
+    if (this.passwordForm.invalid) return;
+
+    const { currentPassword, newPassword, confirmPassword } =
+      this.passwordForm.value;
+    if (newPassword !== confirmPassword) {
+      alert("A nova senha e a confirmação não coincidem");
+      return;
+    }
+
+    this.authService
+      .changePasswordLogged(currentPassword!, newPassword!)
+      .subscribe({
+        next: () => {
+          alert("Senha alterada com sucesso");
+          this.isChangePasswordOpen.set(false);
+          this.passwordForm.reset();
+        },
+        error: (err) => {
+          alert("Erro ao alterar senha: " + err.error?.message || err.message);
+        },
+      });
   }
 }

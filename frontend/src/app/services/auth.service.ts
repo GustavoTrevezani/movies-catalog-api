@@ -94,6 +94,33 @@ export class AuthService {
       );
   }
 
+  changePasswordLogged(
+    currentPassword: string,
+    newPassword: string,
+  ): Observable<void> {
+    return this.http
+      .patch<void>(
+        `${this.API_URL}/auth/new-password`,
+        {
+          currentPassword,
+          newPassword,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${this.getToken()}`,
+          },
+        },
+      )
+      .pipe(
+        catchError((error) => {
+          return throwError(
+            () =>
+              new Error(error.error?.message || "Failed to change password"),
+          );
+        }),
+      );
+  }
+
   loadUser() {
     this.getMe().subscribe({
       next: (user) => {
