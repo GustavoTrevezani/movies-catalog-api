@@ -8,6 +8,7 @@ import {
   Validators,
 } from "@angular/forms";
 import { AuthService } from "../../services/auth.service";
+import { errorTranslations } from "../../shared/i18n/error";
 
 @Component({
   selector: "app-login",
@@ -163,7 +164,8 @@ export class LoginComponent {
         this.router.navigate(["/movies"]);
       },
       error: (error) => {
-        this.errorMessage.set(error.message);
+        const msg = error.message || "Erro desconhecido";
+        this.errorMessage.set(errorTranslations[msg] || msg);
         this.isLoading.set(false);
       },
     });
