@@ -145,10 +145,10 @@ import {
 
             @if (isDropdownOpen()) {
               <div
-                class="absolute right-0 mt-2 w-56 bg-surface rounded-lg border border-border shadow-xl">
+                class="absolute right-0 mt-2 min-w-[14rem] max-w-xs bg-surface rounded-lg border border-border shadow-xl">
                 <div class="p-3 border-b border-border">
                   <p class="font-medium text-text">
-                    {{ authService.user()?.email }}
+                    {{ userEmailPrefix }}
                   </p>
                   <span class="text-xs text-text-muted">{{
                     authService.user()?.role
@@ -280,6 +280,11 @@ export class NavbarComponent {
   get userInitials(): string {
     const email = this.authService.user()?.email || "";
     return email.split("@")[0].charAt(0).toUpperCase();
+  }
+
+  get userEmailPrefix(): string {
+    const email = this.authService.user()?.email || "";
+    return email.split("@")[0];
   }
 
   logout(): void {
