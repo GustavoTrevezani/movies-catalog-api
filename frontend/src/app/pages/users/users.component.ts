@@ -3,6 +3,8 @@ import { CommonModule } from "@angular/common";
 import { FormsModule } from "@angular/forms";
 import { MovieService } from "../../services/movie.service";
 import { UserWithMovies } from "../../models/movie.model";
+import { AuthService } from "../../services/auth.service";
+import { ErrorService } from "../../services/error.service";
 
 @Component({
   selector: "app-users",
@@ -88,6 +90,13 @@ import { UserWithMovies } from "../../models/movie.model";
                   </div>
                   <span class="badge-primary">{{ user.role }}</span>
                 </div>
+                <!-- Button Delete User -->
+                <button
+                  type="button"
+                  (click)="confirmDeleteUser(user.id)"
+                  class="px-3 py-1 rounded-lg bg-error text-white hover:bg-error/90 text-sm">
+                  Deletar
+                </button>
               </div>
 
               <!-- User Movies -->
@@ -244,6 +253,74 @@ import { UserWithMovies } from "../../models/movie.model";
         </div>
       }
     </div>
+    @if (confirmUserId()) {
+      <div
+        class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center">
+        <div class="bg-surface p-6 rounded-lg shadow-lg w-full max-w-sm">
+          <h2 class="text-lg font-bold mb-3">Confirmar exclusão</h2>
+          <p class="text-sm text-text-muted mb-4">
+            Tem certeza que deseja deletar este usuário?
+          </p>
+
+          <div class="flex justify-end gap-3">
+            <button
+              (click)="confirmUserId.set(null)"
+              class="px-4 py-2 bg-gray-300 rounded-lg">
+              Cancelar
+            </button>
+
+            <button
+              (click)="deleteUserConfirmed()"
+              class="px-4 py-2 bg-error text-white rounded-lg">
+              Confirmar
+            </button>
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- Icon Toast -->
+
+    @if (toastMessage()) {
+      <div
+        class="fixed bottom-6 right-6 z-[9999] px-6 py-3 rounded-lg shadow-lg flex items-center gap-2 animate-slide-up text-white"
+        [ngClass]="{
+          'bg-green-500': toastType() === 'success',
+          'bg-orange-500': toastType() === 'error',
+        }">
+        <!-- Ícone sucesso -->
+        @if (toastType() === "success") {
+          <svg
+            class="w-5 h-5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M5 13l4 4L19 7" />
+          </svg>
+        }
+
+        <!-- Ícone erro -->
+        @if (toastType() === "error") {
+          <svg
+            class="w-5 h-5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        }
+
+        {{ toastMessage() }}
+      </div>
+    }
   `,
 })
 export class UsersComponent {
@@ -251,9 +328,16 @@ export class UsersComponent {
   users = signal<UserWithMovies[]>([]);
   isLoading = signal(false);
   hasSearched = signal(false);
+  toastMessage = signal("");
+  toastType = signal<"success" | "error">("success");
+  confirmUserId = signal<string | null>(null);
 
-  constructor(private movieService: MovieService) {}
-
+  constructor(
+    private movieService: MovieService,
+    private authService: AuthService,
+    private errorService: ErrorService,
+  ) {}
+  private toastTimeout?: ReturnType<typeof setTimeout>;
   searchUsers(): void {
     this.isLoading.set(true);
     this.hasSearched.set(true);
@@ -272,6 +356,28 @@ export class UsersComponent {
     });
   }
 
+  confirmDeleteUser(userId: string) {
+    this.confirmUserId.set(userId);
+  }
+
+  deleteUserConfirmed() {
+    const userId = this.confirmUserId();
+    if (!userId) return;
+
+    this.authService.deleteAccountAdmin(userId).subscribe({
+      next: () => {
+        this.users.update((list) => list.filter((u) => u.id !== userId));
+        this.showToast("Conta excluída com sucesso", "success");
+        this.confirmUserId.set(null);
+      },
+      error: (err) => {
+        const message = this.errorService.extractMessage(err);
+        const translated = this.errorService.translate(message);
+        this.showToast(translated, "error");
+      },
+    });
+  }
+
   getUserInitials(email: string): string {
     return email.split("@")[0].charAt(0).toUpperCase();
   }
@@ -279,5 +385,18 @@ export class UsersComponent {
   formatDate(dateString?: string): string {
     if (!dateString) return "";
     return new Date(dateString).toLocaleDateString();
+  }
+
+  private showToast(
+    message: string,
+    type: "success" | "error" = "success",
+  ): void {
+    this.toastMessage.set(message);
+    this.toastType.set(type);
+
+    clearTimeout(this.toastTimeout);
+    this.toastTimeout = setTimeout(() => {
+      this.toastMessage.set("");
+    }, 3000);
   }
 }

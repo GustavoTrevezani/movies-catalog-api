@@ -51,4 +51,18 @@ export class UsersService {
       },
     });
   }
+
+  async deleteUserAdmin(userId: string) {
+    const user = await this.prisma.user.findUnique({ where: { id: userId } });
+    if (!user) throw new NotFoundException("User not found");
+
+    await this.prisma.$transaction([
+      this.prisma.favorite.deleteMany({ where: { userId } }),
+      this.prisma.watched.deleteMany({ where: { userId } }),
+      this.prisma.passwordReset.deleteMany({ where: { userId } }),
+      this.prisma.user.delete({ where: { id: userId } }),
+    ]);
+
+    return { message: "Account deleted successfully" };
+  }
 }

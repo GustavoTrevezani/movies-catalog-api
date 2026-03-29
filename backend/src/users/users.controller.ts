@@ -1,4 +1,11 @@
-import { Controller, Get, Param, UseGuards, Query } from "@nestjs/common";
+import {
+  Controller,
+  Get,
+  Param,
+  UseGuards,
+  Query,
+  Delete,
+} from "@nestjs/common";
 import { UsersService } from "./users.service";
 import { JwtAuthGuard } from "../auth/jwtAuth.guard";
 import { RolesGuard } from "../auth/roles.guard";
@@ -18,6 +25,11 @@ export class UsersController {
   @Get()
   findEmail(@Query("query") query?: string) {
     return this.usersService.searchUsers(query);
+  }
+
+  @Delete("admin/delete-user/:id")
+  async deleteUser(@Param("id") userId: string) {
+    return this.usersService.deleteUserAdmin(userId);
   }
 
   @Get(":id")

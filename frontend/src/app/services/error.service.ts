@@ -35,6 +35,7 @@ export class ErrorService {
 
     // ---- Admin creation ----
     "Admin created successfully": "Admin criado com sucesso",
+    "Account deleted successfully": "Conta deletada com sucesso",
   };
 
   translate(message: string): string {

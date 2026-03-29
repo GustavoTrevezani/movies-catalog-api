@@ -148,6 +148,18 @@ export class AuthService {
       );
   }
 
+  deleteAccountAdmin(userId: string): Observable<void> {
+    return this.http
+      .delete<void>(`${this.API_URL}/users/admin/delete-user/${userId}`)
+      .pipe(
+        catchError((error) => {
+          return throwError(
+            () => new Error(error.error?.message || "Failed to delete account"),
+          );
+        }),
+      );
+  }
+
   loadUser() {
     this.getMe().subscribe({
       next: (user) => {
