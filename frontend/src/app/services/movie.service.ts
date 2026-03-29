@@ -45,7 +45,7 @@ export class MovieService {
   }
 
   removeFromFavorites(imdbId: string): Observable<unknown> {
-    return this.http.delete(`${this.API_URL}/favorites/${imdbId}`).pipe(
+    return this.http.delete(`${this.API_URL}/movies/favorites/${imdbId}`).pipe(
       catchError((error) => {
         return throwError(
           () =>
