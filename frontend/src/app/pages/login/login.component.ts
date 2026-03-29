@@ -54,7 +54,7 @@ import { errorTranslations } from "../../shared/i18n/error";
                 id="email"
                 formControlName="email"
                 class="input-field"
-                placeholder="Enter your email" />
+                placeholder="Coloque seu email" />
               @if (
                 loginForm.get("email")?.touched &&
                 loginForm.get("email")?.errors?.["required"]

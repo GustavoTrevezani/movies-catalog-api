@@ -132,18 +132,41 @@ import { Movie } from "../../models/movie.model";
       <!-- Toast Notification -->
       @if (toastMessage()) {
         <div
-          class="fixed bottom-6 right-6 bg-success text-white px-6 py-3 rounded-lg shadow-lg flex items-center gap-2 animate-slide-up">
-          <svg
-            class="w-5 h-5"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24">
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M5 13l4 4L19 7" />
-          </svg>
+          class="fixed bottom-6 right-6 z-[9999] px-6 py-3 rounded-lg shadow-lg flex items-center gap-2 animate-slide-up text-white"
+          [ngClass]="{
+            'bg-green-500': toastType() === 'success',
+            'bg-orange-500': toastType() === 'error',
+          }">
+          <!-- Ícone sucesso -->
+          @if (toastType() === "success") {
+            <svg
+              class="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M5 13l4 4L19 7" />
+            </svg>
+          }
+
+          <!-- Ícone erro -->
+          @if (toastType() === "error") {
+            <svg
+              class="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          }
+
           {{ toastMessage() }}
         </div>
       }
@@ -173,8 +196,10 @@ export class DashboardComponent {
   isLoading = signal(false);
   hasSearched = signal(false);
   toastMessage = signal("");
+  toastType = signal<"success" | "error">("success");
 
   constructor(private movieService: MovieService) {}
+  private toastTimeout?: ReturnType<typeof setTimeout>;
 
   searchMovies(): void {
     if (!this.searchQuery.trim()) return;
@@ -196,20 +221,28 @@ export class DashboardComponent {
 
   addToFavorites(movie: Movie): void {
     this.movieService.addToFavorites(movie.id).subscribe({
-      next: () => this.showToast("Added to favorites"),
-      error: (err) => this.showToast(err.message),
+      next: () => this.showToast("Adicionado aos favoritos", "success"),
+      error: (err) => this.showToast(err.message, "error"),
     });
   }
 
   addToWatched(movie: Movie): void {
     this.movieService.addToWatched(movie.id).subscribe({
-      next: () => this.showToast("Added to watched"),
-      error: (err) => this.showToast(err.message),
+      next: () => this.showToast("Adicionado aos assistidos", "success"),
+      error: (err) => this.showToast(err.message, "error"),
     });
   }
 
-  private showToast(message: string): void {
+  private showToast(
+    message: string,
+    type: "success" | "error" = "success",
+  ): void {
     this.toastMessage.set(message);
-    setTimeout(() => this.toastMessage.set(""), 3000);
+    this.toastType.set(type);
+
+    clearTimeout(this.toastTimeout);
+    this.toastTimeout = setTimeout(() => {
+      this.toastMessage.set("");
+    }, 3000);
   }
 }

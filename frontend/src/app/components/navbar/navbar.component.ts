@@ -325,12 +325,72 @@ import {
         </form>
       </div>
     </div>
+    <!-- Toast Notification -->
+    @if (toastMessage()) {
+      <div
+        class="fixed bottom-6 right-6 z-[9999] px-6 py-3 rounded-lg shadow-lg flex items-center gap-2 animate-slide-up text-white"
+        [ngClass]="{
+          'bg-green-500': toastType() === 'success',
+          'bg-orange-500': toastType() === 'error',
+        }">
+        <!-- Ícone sucesso -->
+        @if (toastType() === "success") {
+          <svg
+            class="w-5 h-5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M5 13l4 4L19 7" />
+          </svg>
+        }
+
+        <!-- Ícone erro -->
+        @if (toastType() === "error") {
+          <svg
+            class="w-5 h-5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        }
+
+        {{ toastMessage() }}
+      </div>
+    }
   `,
+  styles: [
+    `
+      @keyframes slide-up {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      .animate-slide-up {
+        animation: slide-up 0.3s ease-out;
+      }
+    `,
+  ],
 })
 export class NavbarComponent {
   isDropdownOpen = signal(false);
   isChangePasswordOpen = signal(false);
   isCreateAdminOpen = signal(false);
+  toastMessage = signal("");
+  toastType = signal<"success" | "error">("success");
 
   passwordForm: FormGroup = this.fb.group({
     currentPassword: ["", Validators.required],
@@ -347,6 +407,7 @@ export class NavbarComponent {
     public authService: AuthService,
     private fb: FormBuilder,
   ) {}
+  private toastTimeout?: ReturnType<typeof setTimeout>;
 
   get userInitials(): string {
     const email = this.authService.user()?.email || "";
@@ -374,7 +435,7 @@ export class NavbarComponent {
     const { currentPassword, newPassword, confirmPassword } =
       this.passwordForm.value;
     if (newPassword !== confirmPassword) {
-      alert("A nova senha e a confirmação não coincidem");
+      this.showToast("As senhas não coincidem", "error");
       return;
     }
 
@@ -382,12 +443,17 @@ export class NavbarComponent {
       .changePasswordLogged(currentPassword!, newPassword!)
       .subscribe({
         next: () => {
-          alert("Senha alterada com sucesso");
+          this.showToast("Senha alterada com sucesso", "success");
           this.isChangePasswordOpen.set(false);
           this.passwordForm.reset();
         },
         error: (err) => {
-          alert("Erro ao alterar senha: " + err.error?.message || err.message);
+          const message =
+            err?.error?.message ||
+            err?.message ||
+            "Erro inesperado ao alterar senha";
+
+          this.showToast("Erro ao alterar senha: " + message, "error");
         },
       });
   }
@@ -405,13 +471,25 @@ export class NavbarComponent {
 
     this.authService.registerAdmin({ email, password }).subscribe({
       next: () => {
-        alert("Admin criado com sucesso");
+        this.showToast("Admin criado com sucesso", "success");
         this.isCreateAdminOpen.set(false);
         this.adminForm.reset();
       },
       error: (err) => {
-        alert("Erro: " + (err.error?.message || err.message));
+        this.showToast("Erro: " + (err.error?.message || err.message), "error");
       },
     });
+  }
+  private showToast(
+    message: string,
+    type: "success" | "error" = "success",
+  ): void {
+    this.toastMessage.set(message);
+    this.toastType.set(type);
+
+    clearTimeout(this.toastTimeout);
+    this.toastTimeout = setTimeout(() => {
+      this.toastMessage.set("");
+    }, 3000);
   }
 }

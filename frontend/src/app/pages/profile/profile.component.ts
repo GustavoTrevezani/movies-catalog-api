@@ -179,23 +179,63 @@ import { forkJoin } from "rxjs";
       <!-- Toast Notification -->
       @if (toastMessage()) {
         <div
-          class="fixed bottom-6 right-6 bg-success text-white px-6 py-3 rounded-lg shadow-lg flex items-center gap-2">
-          <svg
-            class="w-5 h-5"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24">
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M5 13l4 4L19 7" />
-          </svg>
+          class="fixed bottom-6 right-6 z-[9999] px-6 py-3 rounded-lg shadow-lg flex items-center gap-2 animate-slide-up text-white"
+          [ngClass]="{
+            'bg-green-500': toastType() === 'success',
+            'bg-orange-500': toastType() === 'error',
+          }">
+          <!-- Ícone sucesso -->
+          @if (toastType() === "success") {
+            <svg
+              class="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M5 13l4 4L19 7" />
+            </svg>
+          }
+
+          <!-- Ícone erro -->
+          @if (toastType() === "error") {
+            <svg
+              class="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          }
+
           {{ toastMessage() }}
         </div>
       }
     </div>
   `,
+  styles: [
+    `
+      @keyframes slide-up {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      .animate-slide-up {
+        animation: slide-up 0.3s ease-out;
+      }
+    `,
+  ],
 })
 export class ProfileComponent implements OnInit {
   activeTab = signal<"favorites" | "watched">("favorites");
@@ -203,11 +243,13 @@ export class ProfileComponent implements OnInit {
   watched = signal<UserMovie[]>([]);
   isLoading = signal(true);
   toastMessage = signal("");
+  toastType = signal<"success" | "error">("success");
 
   constructor(
     private movieService: MovieService,
     public authService: AuthService,
   ) {}
+  private toastTimeout?: ReturnType<typeof setTimeout>;
 
   get userInitials(): string {
     const email = this.authService.user()?.email || "";
@@ -246,9 +288,9 @@ export class ProfileComponent implements OnInit {
         this.favorites.update((items) =>
           items.filter((item) => item.movieId !== movie.id),
         );
-        this.showToast("Removed from favorites");
+        this.showToast("Removido dos favoritos", "success");
       },
-      error: (err) => this.showToast(err.message),
+      error: (err) => this.showToast(err.message, "error"),
     });
   }
 
@@ -258,14 +300,22 @@ export class ProfileComponent implements OnInit {
         this.watched.update((items) =>
           items.filter((item) => item.movieId !== movie.id),
         );
-        this.showToast("Removed from watched");
+        this.showToast("Removido da lista de assistidos", "success");
       },
-      error: (err) => this.showToast(err.message),
+      error: (err) => this.showToast(err.message, "error"),
     });
   }
 
-  private showToast(message: string): void {
+  private showToast(
+    message: string,
+    type: "success" | "error" = "success",
+  ): void {
     this.toastMessage.set(message);
-    setTimeout(() => this.toastMessage.set(""), 3000);
+    this.toastType.set(type);
+
+    clearTimeout(this.toastTimeout);
+    this.toastTimeout = setTimeout(() => {
+      this.toastMessage.set("");
+    }, 3000);
   }
 }
