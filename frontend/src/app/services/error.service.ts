@@ -31,6 +31,7 @@ export class ErrorService {
     "Passwords do not match": "As senhas não coincidem",
     "Current password is incorrect": "Senha atual incorreta",
     "Password updated successfully": "Senha alterada com sucesso",
+    "Invalid password": "Senha inválida",
 
     // ---- Admin creation ----
     "Admin created successfully": "Admin criado com sucesso",

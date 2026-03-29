@@ -72,16 +72,14 @@ export class AuthService {
     const user = await this.prisma.user.findUnique({ where: { email } });
     if (!user) throw new BadRequestException("User not found");
 
-    // gera token e expiração
     const token = randomBytes(32).toString("hex");
-    const expiresAt = addHours(new Date(), 1); // expira em 1h
+    const expiresAt = addHours(new Date(), 1);
 
     await this.prisma.passwordReset.create({
       data: { userId: user.id, token, expiresAt },
     });
 
-    // TODO: enviar email para user.email com o token
-    return { message: "Password reset email sent", token }; // só para teste
+    return { message: "Password reset email sent", token };
   }
 
   async resetPassword(token: string, newPassword: string) {
@@ -98,7 +96,6 @@ export class AuthService {
       data: { password: hashed },
     });
 
-    // remove o token para não reutilizar
     await this.prisma.passwordReset.delete({ where: { token } });
 
     return { message: "Password updated successfully" };
@@ -122,5 +119,25 @@ export class AuthService {
     });
 
     return { message: "Password updated successfully" };
+  }
+
+  async deleteAccount(userId: string, password: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!user) throw new BadRequestException("User not found");
+
+    const isValid = await bcrypt.compare(password, user.password);
+    if (!isValid) throw new UnauthorizedException("Invalid password");
+
+    await this.prisma.$transaction([
+      this.prisma.favorite.deleteMany({ where: { userId } }),
+      this.prisma.watched.deleteMany({ where: { userId } }),
+      this.prisma.passwordReset.deleteMany({ where: { userId } }),
+      this.prisma.user.delete({ where: { id: userId } }),
+    ]);
+
+    return { message: "Account deleted successfully" };
   }
 }

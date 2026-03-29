@@ -9,13 +9,20 @@ import {
   ReactiveFormsModule,
   ValidationErrors,
   AbstractControl,
+  FormsModule,
 } from "@angular/forms";
 import { ErrorService } from "../../services/error.service";
 
 @Component({
   selector: "app-navbar",
   standalone: true,
-  imports: [CommonModule, RouterLink, RouterLinkActive, ReactiveFormsModule],
+  imports: [
+    CommonModule,
+    RouterLink,
+    RouterLinkActive,
+    ReactiveFormsModule,
+    FormsModule,
+  ],
   template: `
     <nav
       class="fixed top-0 left-0 right-0 h-16 bg-surface border-b border-border z-50">
@@ -42,6 +49,7 @@ import { ErrorService } from "../../services/error.service";
         </a>
 
         <!-- Navigation Links -->
+
         <div class="flex items-center gap-1">
           <!-- Movies Link -->
           <a
@@ -63,6 +71,7 @@ import { ErrorService } from "../../services/error.service";
           </a>
 
           <!-- Admin Links -->
+
           @if (authService.isAdmin()) {
             <a
               routerLink="/ranking"
@@ -104,6 +113,7 @@ import { ErrorService } from "../../services/error.service";
           }
 
           <!-- Profile Link -->
+
           <a
             routerLink="/profile"
             routerLinkActive="bg-surface-hover text-primary"
@@ -124,6 +134,7 @@ import { ErrorService } from "../../services/error.service";
           </a>
 
           <!-- User Dropdown -->
+
           <div class="relative ml-2">
             <button
               (click)="isDropdownOpen.set(!isDropdownOpen())"
@@ -172,11 +183,16 @@ import { ErrorService } from "../../services/error.service";
                       Criar Conta Admin
                     </button>
                   }
+                  <!-- Change password-->
+
                   <button
                     (click)="openChangePassword()"
                     class="w-full flex items-center gap-2 px-3 py-2 text-left text-primary hover:bg-primary/10 rounded-lg transition-colors">
                     Trocar Senha
                   </button>
+
+                  <!-- Change logout-->
+
                   <button
                     (click)="logout()"
                     class="w-full flex items-center gap-2 px-3 py-2 text-left text-error hover:bg-error/10 rounded-lg transition-colors">
@@ -193,6 +209,24 @@ import { ErrorService } from "../../services/error.service";
                     </svg>
                     Desconectar
                   </button>
+
+                  <!-- Delete Account -->
+                  <button
+                    (click)="openDeleteModal()"
+                    class="w-full flex items-center gap-2 px-3 py-2 text-left text-error hover:bg-error/10 rounded-lg transition-colors">
+                    <svg
+                      class="w-5 h-5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24">
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                    </svg>
+                    Excluir conta
+                  </button>
                 </div>
               </div>
             }
@@ -206,6 +240,7 @@ import { ErrorService } from "../../services/error.service";
       <div class="fixed inset-0 z-40" (click)="isDropdownOpen.set(false)"></div>
     }
     <!-- Create Admin Modal -->
+
     <div
       *ngIf="isCreateAdminOpen()"
       class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center">
@@ -240,6 +275,7 @@ import { ErrorService } from "../../services/error.service";
           </div>
 
           <!-- Password admin Modal-->
+
           <div class="flex flex-col">
             <label class="mb-1 font-medium text-text">Senha</label>
             <input
@@ -270,6 +306,7 @@ import { ErrorService } from "../../services/error.service";
           </div>
 
           <!-- Buttons -->
+
           <div class="flex justify-end gap-3 mt-4">
             <button
               type="button"
@@ -288,6 +325,7 @@ import { ErrorService } from "../../services/error.service";
       </div>
     </div>
     <!-- Change Password Modal -->
+
     <div
       *ngIf="isChangePasswordOpen()"
       class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center">
@@ -327,6 +365,7 @@ import { ErrorService } from "../../services/error.service";
           </div>
 
           <!-- New Password -->
+
           <div class="flex flex-col">
             <label for="newPassword" class="mb-1 font-medium text-text"
               >Nova Senha</label
@@ -355,6 +394,7 @@ import { ErrorService } from "../../services/error.service";
           </div>
 
           <!-- Confirm New Password -->
+
           <div class="flex flex-col">
             <label for="confirmPassword" class="mb-1 font-medium text-text"
               >Confirmar Senha</label
@@ -404,6 +444,56 @@ import { ErrorService } from "../../services/error.service";
             </button>
           </div>
         </form>
+      </div>
+    </div>
+    <div
+      *ngIf="isDeleteModalOpen()"
+      class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center">
+      <div class="bg-surface rounded-lg p-6 w-full max-w-md shadow-lg">
+        <h2 class="text-xl font-bold text-center mb-4">
+          Confirmar exclusão da conta
+        </h2>
+        <p class="text-sm text-text-muted mb-4">
+          Digite sua senha para confirmar a exclusão permanente da conta.
+        </p>
+        <label for="deletePassword" class="mb-1 font-medium text-text">
+          Senha
+        </label>
+
+        <input
+          type="password"
+          [ngModel]="deletePassword()"
+          (ngModelChange)="deletePassword.set($event)"
+          placeholder="Senha"
+          class="border border-grey-300 text-black rounded-lg p-2 w-full mb-4"
+          [ngClass]="{
+            'border-red-500':
+              deleteForm.get('password')?.touched &&
+              deleteForm.get('password')?.invalid,
+          }" />
+        <p
+          *ngIf="
+            deleteForm.get('password')?.touched &&
+            deleteForm.get('password')?.errors?.['required']
+          "
+          class="text-error text-sm mt-1">
+          Senha é obrigatória
+        </p>
+
+        <div class="flex justify-end gap-3">
+          <button
+            type="button"
+            (click)="isDeleteModalOpen.set(false)"
+            class="px-4 py-2 rounded-lg bg-gray-300 text-black">
+            Cancelar
+          </button>
+          <button
+            type="button"
+            (click)="confirmDeleteAccount(deletePassword())"
+            class="px-4 py-2 rounded-lg bg-error text-white hover:bg-error/90">
+            Confirmar
+          </button>
+        </div>
       </div>
     </div>
     <!-- Toast Notification -->
@@ -472,6 +562,8 @@ export class NavbarComponent {
   isCreateAdminOpen = signal(false);
   toastMessage = signal("");
   toastType = signal<"success" | "error">("success");
+  isDeleteModalOpen = signal(false);
+  deletePassword = signal("");
 
   passwordForm: FormGroup = this.fb.group(
     {
@@ -486,6 +578,10 @@ export class NavbarComponent {
 
   adminForm: FormGroup = this.fb.group({
     email: ["", [Validators.required, Validators.email]],
+    password: ["", [Validators.required, Validators.minLength(6)]],
+  });
+
+  deleteForm: FormGroup = this.fb.group({
     password: ["", [Validators.required, Validators.minLength(6)]],
   });
 
@@ -510,7 +606,33 @@ export class NavbarComponent {
     this.isDropdownOpen.set(false);
     this.authService.logout();
   }
-  // Change password
+
+  confirmDeleteAccount(password: string): void {
+    if (!password) {
+      this.showToast("Digite sua senha para continuar", "error");
+      return;
+    }
+
+    this.authService.deleteAccount(password).subscribe({
+      next: () => {
+        setTimeout(() => {
+          this.showToast("Conta excluída com sucesso", "success");
+          this.isDeleteModalOpen.set(false);
+          this.logout();
+        }, 500);
+      },
+      error: (err) => {
+        const message = this.errorService.extractMessage(err);
+        const translated = this.errorService.translate(message);
+        this.showToast(translated, "error");
+      },
+    });
+  }
+
+  openDeleteModal(): void {
+    this.isDeleteModalOpen.set(true);
+  }
+
   openChangePassword(): void {
     this.isDropdownOpen.set(false);
     this.isChangePasswordOpen.set(true);
