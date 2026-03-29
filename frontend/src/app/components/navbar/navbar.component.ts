@@ -8,6 +8,7 @@ import {
   FormGroup,
   ReactiveFormsModule,
 } from "@angular/forms";
+import { ErrorService } from "../../services/error.service";
 
 @Component({
   selector: "app-navbar",
@@ -406,6 +407,7 @@ export class NavbarComponent {
   constructor(
     public authService: AuthService,
     private fb: FormBuilder,
+    private errorService: ErrorService,
   ) {}
   private toastTimeout?: ReturnType<typeof setTimeout>;
 
@@ -443,17 +445,15 @@ export class NavbarComponent {
       .changePasswordLogged(currentPassword!, newPassword!)
       .subscribe({
         next: () => {
-          this.showToast("Senha alterada com sucesso", "success");
+          this.showToast("Senha atualizada com sucesso", "success");
           this.isChangePasswordOpen.set(false);
           this.passwordForm.reset();
         },
         error: (err) => {
-          const message =
-            err?.error?.message ||
-            err?.message ||
-            "Erro inesperado ao alterar senha";
+          const message = this.errorService.extractMessage(err);
+          const translated = this.errorService.translate(message);
 
-          this.showToast("Erro ao alterar senha: " + message, "error");
+          this.showToast(translated, "error");
         },
       });
   }
@@ -476,7 +476,10 @@ export class NavbarComponent {
         this.adminForm.reset();
       },
       error: (err) => {
-        this.showToast("Erro: " + (err.error?.message || err.message), "error");
+        const message = this.errorService.extractMessage(err);
+        const translated = this.errorService.translate(message);
+
+        this.showToast(translated, "error");
       },
     });
   }

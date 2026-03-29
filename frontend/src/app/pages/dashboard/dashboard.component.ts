@@ -4,6 +4,7 @@ import { FormsModule } from "@angular/forms";
 import { MovieCardComponent } from "../../components/movie-card/movie-card.component";
 import { MovieService } from "../../services/movie.service";
 import { Movie } from "../../models/movie.model";
+import { ErrorService } from "../../services/error.service";
 
 @Component({
   selector: "app-dashboard",
@@ -198,7 +199,10 @@ export class DashboardComponent {
   toastMessage = signal("");
   toastType = signal<"success" | "error">("success");
 
-  constructor(private movieService: MovieService) {}
+  constructor(
+    private movieService: MovieService,
+    private errorService: ErrorService,
+  ) {}
   private toastTimeout?: ReturnType<typeof setTimeout>;
 
   searchMovies(): void {
@@ -221,15 +225,25 @@ export class DashboardComponent {
 
   addToFavorites(movie: Movie): void {
     this.movieService.addToFavorites(movie.id).subscribe({
-      next: () => this.showToast("Adicionado aos favoritos", "success"),
-      error: (err) => this.showToast(err.message, "error"),
+      next: () => this.showToast("Filme adicionado aos favoritos", "success"),
+      error: (err) => {
+        const message = this.errorService.extractMessage(err);
+        const translated = this.errorService.translate(message);
+
+        this.showToast(translated, "error");
+      },
     });
   }
 
   addToWatched(movie: Movie): void {
     this.movieService.addToWatched(movie.id).subscribe({
-      next: () => this.showToast("Adicionado aos assistidos", "success"),
-      error: (err) => this.showToast(err.message, "error"),
+      next: () => this.showToast("Filme adicionado aos assistidos", "success"),
+      error: (err) => {
+        const message = this.errorService.extractMessage(err);
+        const translated = this.errorService.translate(message);
+
+        this.showToast(translated, "error");
+      },
     });
   }
 
