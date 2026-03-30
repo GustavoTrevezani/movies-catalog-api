@@ -4,6 +4,14 @@ Projeto desenvolvido como teste técnico, com o objetivo de criar uma aplicaçã
 
 ## 🔗 Deploy: [Gestão de Filmes acesse por aqui!](https://teste-vaga-micro-kids-gestao-filmes.vercel.app)
 
+# Perfil para testar como administrador sendo
+
+**Email: admin@hotmail.com**
+
+**Senha: admin123**
+
+---
+
 **⚠️ Observação:**
 **O backend está hospedado no Render (free tier), podendo levar alguns segundos na primeira requisição devido ao cold start.**
 
