@@ -5,7 +5,7 @@
     "ng": "ng",
     "dev": "ng serve --port 3001",
     "start": "ng serve",
-    "build": "ng build",
+    "build": "ng build --configuration production --base-href=/",
     "watch": "ng build --watch --configuration development"
   },
   "private": true,

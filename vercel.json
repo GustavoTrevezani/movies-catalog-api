@@ -4,14 +4,14 @@
       "src": "frontend/package.json",
       "use": "@vercel/static-build",
       "config": {
-        "distDir": "dist/movie-management"
+        "distDir": "frontend/dist/movie-management/browser"
       }
     }
   ],
   "routes": [
     {
       "src": "/(.*)",
-      "dest": "/frontend/dist/movie-management/index.html"
+      "dest": "/index.html"
     }
   ]
 }
