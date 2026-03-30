@@ -31,6 +31,31 @@ npx prisma generate
 npx prisma migrate dev
 ```
 
+# configurar variáveis de ambiente (.env)
+
+## backend/.env
+
+```
+# Connect to Supabase via connection pooling
+DATABASE_URL="postgresql://postgres.bcgvxyuyciysjpjyzgfz:[SuaSenha]@aws-1-us-east-1.pooler.supabase.com:5432/postgres?pgbouncer=true"
+
+# Direct connection to the database. Used for migrations
+DIRECT_URL="postgresql://postgres.bcgvxyuyciysjpjyzgfz:[SuaSenha]@aws-1-us-east-1.pooler.supabase.com:5432/postgres"
+
+JWT_SECRET="Sua_Senha_secreta_aqui"
+OMDB_API_KEY="84268f6d"
+```
+
+## frontend/.env
+
+```
+NEXT_PUBLIC_API_URL="http://localhost:3000"
+
+JWT_SECRET="Sua_Senha_secreta_aqui"
+
+OMDB_API_KEY="84268f6d"
+```
+
 ## Servidor rotas url
 
 1. backend http://localhost:3001
@@ -40,23 +65,20 @@ npx prisma migrate dev
 
 1. npm run dev
 
-# Como rodar o backEnd
+# Como rodar o backend
+
+**Dentro do terminal raiz/backend rode estes comandos**
 
 1. cd backend
 2. npm run build
-3. npm run start:dev
+3. npm run start
 
 # Como rodar o frontend
 
+**Dentro do terminal raiz/frontend rode estes comandos**
+
 1. cd backend
-2. npm run watch
-
-# configurar variáveis de ambiente (.env)
-
-```
-DATABASE_URL="postgresql://postgres.bcgvxyuyciysjpjyzgfz:[SUA_SENHA_AQUI]@aws-1-us-east-1.pooler.supabase.com:5432/postgres?pgbouncer=true"
-OMDB_API_KEY="sua_chave"
-```
+2. npm run dev
 
 # 🛠 Tecnologias utilizadas
 
