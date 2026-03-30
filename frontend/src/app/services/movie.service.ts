@@ -8,12 +8,13 @@ import {
   UserWithMovies,
   UserMovie,
 } from "../models/movie.model";
+import { environment } from "../../environments/environments";
 
 @Injectable({
   providedIn: "root",
 })
 export class MovieService {
-  private readonly API_URL = "http://localhost:3000";
+  private readonly API_URL = environment.apiUrl;
 
   constructor(private http: HttpClient) {}
 
