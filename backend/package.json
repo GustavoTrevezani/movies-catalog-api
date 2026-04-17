@@ -1,5 +1,5 @@
 {
-  "name": "teste-vaga-microkids---gestao-filmes",
+  "name": "movie-catalog-api",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
