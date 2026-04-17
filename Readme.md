@@ -1,40 +1,44 @@
 # 🎬 Gestão de Filmes
 
-Projeto desenvolvido como teste técnico, com o objetivo de criar uma aplicação completa (frontend + backend) para gerenciamento e consulta de filmes utilizando API externa (OMDb).
+Project developed as a technical test, aiming to build a full application (frontend + backend) for managing and querying movies using an external API (OMDb).
 
-## 🔗 Deploy: [Gestão de Filmes acesse por aqui!](https://teste-vaga-micro-kids-gestao-filmes.vercel.app)
+## 🔗 Deploy: [Movie catalog here - Access Here!](https://teste-vaga-micro-kids-gestao-filmes.vercel.app)
 
-# Perfil para testar como administrador sendo
+# Admin test profile
 
 **Email: admin@hotmail.com**
 
-**Senha: admin123**
+**Password: admin123**
 
 ---
 
-**⚠️ Observação:**
-**O backend está hospedado no Render (free tier), podendo levar alguns segundos na primeira requisição devido ao cold start.**
+**⚠️ Note:**
+**The backend is hosted on Render (free tier) and may take a few seconds on the first request due to cold start.**
 
-## 🚀 Como rodar o projeto
+<p align="center">
+  <img src="./assets/demo.gif" width="700"/>
+</p>
 
-### 📦 Pré-requisitos
+## 🚀 How to run the project
+
+### 📦 prerequisites
 
 - Node.js (>= 18)
 - npm ou yarn
-- Banco de dados (PostgreSQL via Prisma)
+- Database (PostgreSQL with Prisma)
 
 ---
 
-### 🔧 Clonar o repositório
+### 🔧 Clone the repository
 
 ```bash
-git clone https://github.com/GustavoTrevezani/Teste-Vaga-MicroKids---Gestao-Filmes.git
-cd Teste-Vaga-MicroKids---Gestao-Filmes
+git clone https://github.com/GustavoTrevezani/movies-catalog-api.git
+cd movies-catalog-api
 ```
 
 ---
 
-# Prisma precisa ser gerado:
+# Prisma setup
 
 ```
 npm install
@@ -42,7 +46,7 @@ npx prisma generate
 npx prisma migrate dev
 ```
 
-# configurar variáveis de ambiente (.env)
+# Configure environment variables (.env)
 
 ## backend/.env
 
@@ -67,78 +71,78 @@ JWT_SECRET="Sua_Senha_secreta_aqui"
 OMDB_API_KEY="84268f6d"
 ```
 
-## Servidor rotas url
+## Server URLs
 
 1. backend http://localhost:3001
 2. frontend http://localhost:3000
 
-# Como rodar o FrontEnd e BackEnd juntos na Raiz do projeto
+# Run frontend and backend together (root folder)
 
 1. npm run dev
 
-# Como rodar o backend
+# Run backend
 
-**Dentro do terminal raiz/backend rode estes comandos**
+**Inside the root/backend folder, run:**
 
 1. cd backend
 2. npm run build
 3. npm run start
 
-# Como rodar o frontend
+# Run frontend
 
-**Dentro do terminal raiz/frontend rode estes comandos**
+**Inside the root/frontend folder, run:**
 
 1. cd backend
 2. npm run dev
 
-# 🛠 Tecnologias utilizadas
+# 🛠 Technologies Used
 
 ## Backend
 
 - Node.js
 - TypeScript
 - Prisma ORM
-- Banco de dados relacional PostgreSQL
-- Integração com API externa (OMDb)
+- PostgreSQL (relational database)
+- External API integration (OMDb)
 
 ## Frontend
 
 - TypeScript
 - HTML/CSS
 - Angular
-- Consumo de API REST
+- REST API consumption
 
-## 🔐 Autenticação, Autorização e Validação
+## 🔐 Authentication, Authorization, and Validation
 
-A aplicação utiliza boas práticas de segurança com autenticação via JWT, controle de permissões baseado em roles e validação de dados com DTOs.
+The application follows security best practices using JWT authentication, role-based access control, and DTO validation.
 
 ---
 
-### 🔑 Autenticação com JWT
+### 🔑 JWT Authentication
 
-A autenticação é feita utilizando JSON Web Tokens (JWT).  
-Rotas protegidas utilizam o `JwtAuthGuard`, que valida o token enviado no header da requisição.
+Authentication is handled using JSON Web Tokens (JWT).
+Protected routes use JwtAuthGuard, which validates the token sent in the request header.
 
-Exemplo de uso:
+Example:
 
 ```http
 Authorization: Bearer <token>
 ```
 
-Se o token for válido, os dados do usuário são injetados na requisição (request.user).
-Caso contrário, a requisição é bloqueada com erro 401 Unauthorized.
+If the token is valid, user data is injected into the request (request.user).
+Otherwise, the request is blocked with a 401 Unauthorized error.
 
-## 🛡️ Controle de acesso com Roles (RBAC)
+## 🛡️ Role-Based Access Control (RBAC)
 
-O projeto implementa controle de acesso baseado em papéis (roles), permitindo restringir rotas conforme o nível de permissão do usuário.
+The project implements role-based access control, allowing route restrictions based on user permission levels.
 
-Foi criado um decorator personalizado:
+A custom decorator was created:
 
 **@Roles("admin")**
 
-E um guard (RolesGuard) que verifica se o usuário autenticado possui a role necessária para acessar a rota.
+And a guard (RolesGuard) checks if the authenticated user has the required role.
 
-**Exemplo de uso:**
+**Example:**
 
 ```
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -147,13 +151,13 @@ E um guard (RolesGuard) que verifica se o usuário autenticado possui a role nec
 findAll() {}
 ```
 
-Se o usuário não possuir a permissão necessária, a API retorna **401 Unauthorized.**
+If the user does not have permission, the API returns **401 Unauthorized.**
 
-## 📦 Validação de dados com DTO
+## 📦 Data Validation with DTOs
 
-A aplicação utiliza DTOs (Data Transfer Objects) para validar os dados de entrada nas requisições.
+The application uses DTOs (Data Transfer Objects) to validate incoming request data.
 
-**Exemplo:**
+**Exemple:**
 
 ```
 export class ResetPasswordDto {
@@ -167,73 +171,69 @@ export class ResetPasswordDto {
 
 ```
 
-Os DTOs garantem:
+DTOs ensure:
 
-- Tipagem forte
-- Validação automática
-- Segurança contra dados inválidos
-- Padronização das entradas da API
+- Strong typing
+- Automatic validation
+- Protection against invalid data
+- Standardized API inputs
 
-# 🎯 Funcionalidades
+# 🎯 Features
 
-- Buscar filmes via API OMDb
-- Listar filmes
-- Armazenar filmes no banco de dados
-- Gerenciar catálogo de filmes
+- Search movies via OMDb API
+- List movies
+- Store movies in the database
+- Manage movie catalog
 
-# 🧠 Decisões tomadas
+# 🧠 Technical Decisions
 
-## 1. Separação Frontend e Backend
+## 1. Frontend and Backend Separation
 
-**Optei por separar em duas aplicações distintas para:**
+**I chose to separate into two applications to:**
 
-- Melhor organização do código
-- Escalabilidade futura
-- Possibilidade de deploy independente
+- Improve code organization
+- Enable future scalability
+- Allow independent deployment
 
-## 2. Uso do Prisma
+## 2. Prisma Usage
 
-**Escolhi o Prisma por:**
+**Chosen because:**
 
-- Facilidade de modelagem do banco
-- Tipagem forte com TypeScript
-- Produtividade no desenvolvimento
+- Easy database modeling
+- Strong typing with TypeScript
+- High development productivity
 
-## 3. Integração com OMDb API
+## 3. OMDb API Integration
 
-**Utilizei a API OMDb para:**
+**Used to:**
 
-- Garantir o requisito do teste técnico
-- Evitar necessidade de base de dados própria de filmes
-- Obter dados ricos (poster, descrição, ano, etc)
-- Simular cenário real de consumo de API externa
+- Meet the technical test requirement
+- Avoid maintaining a proprietary movie database
+- Retrieve rich data (poster, description, year, etc.)
+- Simulate a real-world external API consumption scenario
 
-## 4. TypeScript em todo o projeto
+## 4. TypeScript Across the Entire Project
 
-**Decisão para:**
+**Decision made for:**
 
-- Melhor manutenção
-- Redução de erros
-- Código mais previsível
+- Better maintainability
+- Fewer runtime errors
+- More predictable code
 
-## 5. Anulgar no frontend
+## 5. Angular on the Frontend
 
-**Escolhido por:**
+**Chosen because:**
 
-- Requisito técnico
-- Build rápido
-- Simplicidade
-- Setup leve
+- Technical requirement
+- Fast build
+- Simplicity
+- Lightweight setup
 
-## 📌 Observações
+## 📌 Notes
 
-O projeto foi desenvolvido com foco em simplicidade e clareza
-Estrutura pensada para fácil evolução.
+The project was developed with a focus on simplicity and clarity.
+The structure was designed for easy future evolution.
 
-# 👨‍💻 Autor
+# 👨‍💻 Author
 
 # **Gustavo Trevezani Frasson**
-
-```
-
-```
